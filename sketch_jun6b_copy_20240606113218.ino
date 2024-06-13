@@ -1,0 +1,114 @@
+//PROGRAMA BASE CARRINHO BLUETOOTH
+
+//USAR PINOS CONFORME ENDEREÇAMENTO ABAIXO
+
+//Definição do uso dos pinos do Arduino
+#define pinMotor1A     2 //lar
+#define pinMotor1B     3 //az
+#define pinMotor2A     5 //rx
+#define pinMotor2B     4 //cz
+
+#define pinBtRx        6  //vd
+#define pinBtTx        7  //am
+
+//Biblioteca para comunicação com módulo Bluetooth
+#include <SoftwareSerial.h>
+SoftwareSerial bluetooth(pinBtRx, pinBtTx); // RX, TX
+
+//Declaração das variaveis para Controle do Motor
+int velocidade = 0;
+bool sentido = 1;
+int estado = 0;
+
+//Configuração do projeto no Arduino ---------------------------------------------------
+void setup() {
+  //Configura o estado das portas do Arduino
+  pinMode(pinMotor1A, OUTPUT); // Define o pino 2 como saída para o motor 1A
+  pinMode(pinMotor1B, OUTPUT); // Define o pino 3 como saída para o motor 1B
+  pinMode(pinMotor2A, OUTPUT); // Define o pino 5 como saída para o motor 2A
+  pinMode(pinMotor2B, OUTPUT); // Define o pino 4 como saída para o motor 2B
+
+  //Inicia a comunicação serial para monitorar o que está acontecendo pelo monitor serial
+  Serial.begin(9600);
+
+  //Inicia a cominicação serial com o módulo bluetooth
+  bluetooth.begin(9600);
+}
+
+// Lógica do projeto do Arduino ------------------------------------------------------------
+
+void loop() {
+  char recebido;
+
+  //Teste do Bluetooth
+  if (bluetooth.available()) { // Verifica se há dados disponíveis para leitura no módulo Bluetooth
+    recebido = bluetooth.read(); // Lê o caractere recebido do módulo Bluetooth
+    Serial.write(recebido); // Envia o caractere lido para o monitor serial
+    Serial.println("- "); // Imprime um separador no monitor serial
+  } 
+
+  if (recebido == 'F') {   // MOVIMENTO PARA FRENTE 
+    digitalWrite(pinMotor1A, HIGH); // Liga o motor 1A
+    digitalWrite(pinMotor1B, LOW);  // Desliga ( Interrompe a engergia) o motor 1B
+    digitalWrite(pinMotor2A, LOW);  // Desliga (Interrompe a engergia) o motor 2A
+    digitalWrite(pinMotor2B, HIGH); // Liga o motor 2B
+  }
+  
+  else if (recebido == 'B') {   // MOVIMENTO PARA TRÁS (RÉ)
+       
+       digitalWrite(pinMotor1A, LOW);   // Desliga o motor 1A
+       digitalWrite(pinMotor1B, HIGH);  // Liga o motor 1B (sentido oposto)
+       digitalWrite(pinMotor2A, HIGH);  // Liga o motor 2A (sentido oposto)
+       digitalWrite(pinMotor2B, LOW);   // Desliga o motor 2B
+
+     }else if (recebido == 'L') {   // MOVIMENTO PARA ESQUERDA
+     
+       digitalWrite(pinMotor1A, LOW);   // Desliga o motor 1A
+       digitalWrite(pinMotor1B, LOW);   // Desliga o motor 1B
+       digitalWrite(pinMotor2A, LOW);   // Desliga o motor 2A
+       digitalWrite(pinMotor2B, HIGH);  // Liga o motor 2B (sentido oposto)
+
+     }  else if (recebido == 'R') {   // MOVIMENTO PARA DIREITA 
+     
+       digitalWrite(pinMotor1A, HIGH);  // Liga o motor 1A
+       digitalWrite(pinMotor1B, LOW);   // Desliga o motor 1B
+       digitalWrite(pinMotor2A, LOW);   // Desliga o motor 2A
+       digitalWrite(pinMotor2B, LOW);   // Desliga o motor 2B
+    
+    } 
+
+    else if (recebido == 'S') {   // PARADO
+     
+       digitalWrite(pinMotor1A, LOW);   // Desliga o motor 1A
+       digitalWrite(pinMotor1B, LOW);   // Desliga o motor 1B
+       digitalWrite(pinMotor2A, LOW);   // Desliga o motor 2A
+       digitalWrite(pinMotor2B, LOW);   // Desliga o motor 2B
+    
+    } 
+
+    else if (recebido == 'V') {   // REALIZAR 360 GRAUS
+      digitalWrite(pinMotor1A, HIGH);  // Liga o motor 1A
+      digitalWrite(pinMotor1B, LOW);   // Desliga o motor 1B
+      digitalWrite(pinMotor2A, HIGH);  // Liga o motor 2A
+      digitalWrite(pinMotor2B, LOW);   // Desliga o motor 2B
+      delay(1500); // Ajuste o tempo conforme necessário para completar um giro de 360 graus
+      digitalWrite(pinMotor1A, LOW);   // Desliga o motor 1A
+      digitalWrite(pinMotor1B, LOW);   // Desliga o motor 1B
+      digitalWrite(pinMotor2A, LOW);   // Desliga o motor 2A
+      digitalWrite(pinMotor2B, LOW);   // Desliga o motor 2B
+    }
+
+    
+    else if (recebido == 'W') {   // REALIZAR 180 GRAUS
+      digitalWrite(pinMotor1A, HIGH);  // Liga o motor 1A
+      digitalWrite(pinMotor1B, LOW);   // Desliga o motor 1B
+      digitalWrite(pinMotor2A, HIGH);  // Liga o motor 2A
+      digitalWrite(pinMotor2B, LOW);   // Desliga o motor 2B
+      delay(750); // Ajustar o tempo conforme necessário para completar um giro de 180 graus
+      digitalWrite(pinMotor1A, LOW);   // Desliga o motor 1A
+      digitalWrite(pinMotor1B, LOW);   // Desliga o motor 1B
+      digitalWrite(pinMotor2A, LOW);   // Desliga o motor 2A
+      digitalWrite(pinMotor2B, LOW);   // Desliga o motor 2B
+    }
+    
+}
